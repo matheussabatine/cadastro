@@ -1,85 +1,111 @@
 class Cliente {
     constructor() {
-        this.clientes = localStorage.getItem('chave') === null
+        this.clientes = localStorage.getItem('tbClientes') === null
         ? []
-        :JSON.parse(localStorage.getItem('chave'))
-    }
-    salva(cliente){
-        if(document.getElementById('código').getAttribute('disabled') === 'disabled'){
-            this.apaga(cliente.código)
-        }
-        this.clientes.push(cliente)
-        localStorage.setItem('chave', JSON.stringify(this.clientes))
-        alert('salvo com sucesso')
+        : JSON.parse(localStorage.getItem('tbClientes'))
     }
 
-    apaga(código){
-        let index = this.clientes.findIndex(cliente => cliente.código == código)
-        this.clientes.splice(index, 1) //index é o elemento do array
-        //salvamos a alteração
-        localStorage.setItem('chave',JSON.stringify(this.clientes))
+    salva(cliente){
+        //o registro está sendo editado?
+    if(document.getElementById('codigo').getAttribute('disabled')==='disabled'){
+        this.apaga(cliente.codigo)
+    }
+        this.clientes.push(cliente) //adiciona um novo elemento ao array
+        localStorage.setItem('tbClientes', JSON.stringify(this.clientes))
+        alert('Cliente salvo com sucesso!')
+    }
+
+    apaga(codigo){
+        let index = this.clientes.findIndex(cliente => cliente.codigo == codigo)
+        this.clientes.splice(index, 1)
+        localStorage.setItem('tbClientes',JSON.stringify(this.clientes))
         cliente.atualiza()
     }
 
     edita(cliente){
-        document.getElementById('código').setAttribute('disabled','disabled')
-        document.getElementById('código').value = cliente.código
+        document.getElementById('codigo').setAttribute('disabled','disabled')
+        document.getElementById('codigo').value = cliente.codigo
         document.getElementById('nome').value = cliente.nome
         document.getElementById('cep').value = cliente.cep
-        document.getElementById('endereço').value = cliente.endereço
+        document.getElementById('endereco').value = cliente.endereco
         document.getElementById('bairro').value = cliente.bairro
         document.getElementById('cidade').value = cliente.cidade
-        document.getElementById('observações').value = cliente.observações
+        document.getElementById('observacoes').value = cliente.observacoes
+        document.getElementById('limite').value = cliente.limite
+        document.getElementById('utilizado').value = cliente.utilizado
+        document.getElementById('saldo').value = cliente.saldo
     }
+    
     lista(){
-        const listagem = this.clientes.map((cliente) =>(
+        const listagem = this.clientes.map((cliente) => (
             `<tr>
-                <td>${cliente.código}</td>
-                <td>${cliente.nome}</td>
-                <td>${cliente.cep}</td>
-                <td>${cliente.endereço}</td>
-                <td>${cliente.bairro}</td>
-                <td>${cliente.cidade}</td>
-                <td>${cliente.observações}</td>
-                <td>
-                <button id='apagar' onClick='cliente.apaga(${cliente.código})'>
+            <td>${cliente.codigo}</td>
+            <td>${cliente.nome}</td>
+            <td>${cliente.cep}</td>
+            <td>${cliente.endereco}</td>
+            <td>${cliente.bairro}</td>
+            <td>${cliente.cidade}</td>
+            <td>${cliente.observacoes}</td>
+            <td>${cliente.saldo}</td>
+            <td>
+                <button id='apagar' onClick='cliente.apaga(${cliente.codigo})'>
                 🗑️Apagar</button>
                 <button id='editar' onClick='cliente.edita(${JSON.stringify(cliente)})'>
                 ✏️Editar</button>
             </td>
-            </tr>`
+            </tr>
+            `
         ))
         return (`<table border='1' class='paleBlueRows'>
         <caption>Relação dos Clientes</caption>
         <thead>
-            <th>Código</th>  <th>Nome</th> <th>CEP</th> <th>Endereço</th> 
-            <th>Bairro</th>  <th>Cidade</th> <th>Observações</th><th>Opções</th>
+            <th>Código</th>  
+            <th>Nome</th> 
+            <th>CEP</th> 
+            <th>Endereço</th> 
+            <th>Bairro</th>  
+            <th>Cidade</th> 
+            <th>Observações</th>
+            <th>Saldo</th>
+            <th>Opções</th>
         </thead>
         <tbody>${listagem}</tbody>      
         </table>
         `)
     }
+
     atualiza(){
         document.getElementById('listagem').innerHTML = cliente.lista()
     }
 }
-
-
+//instanciamos um novo objeto
 const cliente = new Cliente()
-document.getElementById('salvar').onclick = function (){
-    alert('ok')
+//tratamos o botão salvar
+document.getElementById('salvar').onclick = function ()  {
     const registro = {
-        código: document.getElementById('código').value,
+        codigo: document.getElementById('codigo').value,
         nome: document.getElementById('nome').value,
         cep: document.getElementById('cep').value,
-        endereço: document.getElementById('endereço').value,
+        endereco: document.getElementById('endereco').value,
         bairro: document.getElementById('bairro').value,
         cidade: document.getElementById('cidade').value,
-        observações: document.getElementById('observações').value
-
-    }
+        observacoes: document.getElementById('observacoes').value,
+        limite: document.getElementById('limite').value,
+        utilizado: document.getElementById('utilizado').value,
+        saldo: document.getElementById('saldo').value
+    } 
     cliente.salva(registro)
 }
-window.onload = function() {
+//tratamos a listagem
+window.onload = function(){
     cliente.atualiza()
 }
+//tratamos a alteração do campo utilizado
+document.getElementById('utilizado').onchange = function ()  {
+let limite = document.getElementById('limite').value
+let utilizado = document.getElementById('utilizado').value
+let saldo = (limite - utilizado)
+document.getElementById('saldo').value = saldo.toFixed(2)
+
+}
+
